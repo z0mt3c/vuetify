@@ -29,13 +29,16 @@ export default {
   carousel: {
     prev: 'Forrige bilde',
     next: 'Neste bilde',
+    ariaLabel: {
+      delimiter: 'Carousel slide {0} of {1}',
+    },
   },
   calendar: {
     moreEvents: '{0} mer',
   },
   fileInput: {
-    counter: '{0} files',
-    counterSize: '{0} files ({1} in total)',
+    counter: '{0} filer',
+    counterSize: '{0} filer ({1} totalt)',
   },
   timePicker: {
     am: 'AM',
