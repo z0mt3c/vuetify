@@ -9,7 +9,7 @@ import Colorable from '../../mixins/colorable'
 
 // Utils
 import mixins, { ExtractVue } from '../../util/mixins'
-import { getObjectValueByPath } from '../../util/helpers'
+import { getObjectValueByPath, createRange } from '../../util/helpers'
 import { PropValidator } from 'vue/types/options'
 
 // Types
@@ -95,6 +95,7 @@ const VTreeviewNode = baseMixins.extend<options>().extend({
   },
 
   props: {
+    level: Number,
     item: {
       type: Object,
       default: () => null,
@@ -182,11 +183,25 @@ const VTreeviewNode = baseMixins.extend<options>().extend({
         staticClass: 'v-treeview-node__label',
       }, children)
     },
+    genPrependSlot () {
+      if (!this.$scopedSlots.prepend) return null
+
+      return this.$createElement('div', {
+        staticClass: 'v-treeview-node__prepend',
+      }, this.$scopedSlots.prepend(this.scopedProps))
+    },
+    genAppendSlot () {
+      if (!this.$scopedSlots.append) return null
+
+      return this.$createElement('div', {
+        staticClass: 'v-treeview-node__append',
+      }, this.$scopedSlots.append(this.scopedProps))
+    },
     genContent () {
       const children = [
-        this.$scopedSlots.prepend && this.$scopedSlots.prepend(this.scopedProps),
+        this.genPrependSlot(),
         this.genLabel(),
-        this.$scopedSlots.append && this.$scopedSlots.append(this.scopedProps),
+        this.genAppendSlot(),
       ]
 
       return this.$createElement('div', {
@@ -242,11 +257,23 @@ const VTreeviewNode = baseMixins.extend<options>().extend({
         },
       }, [this.computedIcon])
     },
+    genLevel (level: number) {
+      return createRange(level).map(() => this.$createElement('div', {
+        staticClass: 'v-treeview-node__level',
+      }))
+    },
     genNode (): VNode {
       const children = [this.genContent()]
 
       if (this.selectable) children.unshift(this.genCheckbox())
-      if (this.hasChildren) children.unshift(this.genToggle())
+
+      if (this.hasChildren) {
+        children.unshift(this.genToggle())
+      } else {
+        children.unshift(...this.genLevel(1))
+      }
+
+      children.unshift(...this.genLevel(this.level))
 
       return this.$createElement('div', this.setTextColor(this.isActive && this.color, {
         staticClass: 'v-treeview-node__root',
@@ -292,6 +319,7 @@ const VTreeviewNode = baseMixins.extend<options>().extend({
           openOnClick: this.openOnClick,
           rounded: this.rounded,
           shaped: this.shaped,
+          level: this.level + 1,
         },
         scopedSlots: this.$scopedSlots,
       })
