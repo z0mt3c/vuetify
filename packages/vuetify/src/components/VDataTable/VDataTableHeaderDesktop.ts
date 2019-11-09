@@ -55,14 +55,30 @@ export default mixins(header).extend({
 
           if (beingSorted) {
             classes.push('active')
-            classes.push(isDesc ? 'desc' : 'asc')
 
-            attrs['aria-sort'] = isDesc ? 'descending' : 'ascending'
-            attrs['aria-label'] += isDesc
-              ? this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortDescending')
-              : this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortAscending')
+            if (isDesc) {
+              classes.push('desc')
+              attrs['aria-sort'] = 'descending'
+              attrs['aria-label'] += [
+                this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortDescending'),
+                this.$vuetify.lang.t(this.options.mustSort
+                  ? '$vuetify.dataTable.ariaLabel.activateAscending'
+                  : '$vuetify.dataTable.ariaLabel.activateNone'
+                ),
+              ].join(' ')
+            } else {
+              classes.push('asc')
+              attrs['aria-sort'] = 'ascending'
+              attrs['aria-label'] += [
+                this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortAscending'),
+                this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.activateDescending'),
+              ].join(' ')
+            }
           } else {
-            attrs['aria-label'] += this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortNone')
+            attrs['aria-label'] += [
+              this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.sortNone'),
+              this.$vuetify.lang.t('$vuetify.dataTable.ariaLabel.activateAscending'),
+            ].join(' ')
           }
 
           if (header.align === 'end') children.unshift(this.genSortIcon())
