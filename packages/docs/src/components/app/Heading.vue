@@ -7,12 +7,16 @@
       v-if="href"
       :href="href"
       class="text-decoration-none text-right text-md-left"
+      style="user-select: none"
+      aria-hidden="true"
       @click="onClick"
     >
       #
     </a>
 
-    {{ content }}
+    <slot>
+      {{ content }}
+    </slot>
   </component>
 </template>
 
@@ -23,7 +27,7 @@
 
   const HEADING_CLASSES = {
     1: 'text-h3 text-sm-h3 mb-4',
-    2: 'text-h4 text-sm-h4 mb-3',
+    2: 'text-h4 text-sm-h4 mb-4 mt-4',
     3: 'text-h5 mb-2',
     4: 'text-h6 mb-2',
     5: 'text-subtitle-1 font-weight-medium mb-2',

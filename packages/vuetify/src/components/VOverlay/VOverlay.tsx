@@ -22,6 +22,7 @@ import { ClickOutside } from '@/directives/click-outside'
 
 // Utilities
 import {
+  animate,
   convertToUnit,
   genericComponent,
   getScrollParent,
@@ -136,7 +137,7 @@ export const VOverlay = genericComponent<new () => {
       return typeof props.scrim === 'string' ? props.scrim : null
     }))
     const { globalTop, localTop, stackStyles } = useStack(isActive, toRef(props, 'zIndex'))
-    const { activatorEl, activatorRef, activatorEvents, contentEvents } = useActivator(props, { isActive, isTop: localTop })
+    const { activatorEl, activatorRef, activatorEvents, contentEvents, scrimEvents } = useActivator(props, { isActive, isTop: localTop })
     const { dimensionStyles } = useDimension(props)
 
     watch(() => props.disabled, v => {
@@ -213,7 +214,7 @@ export const VOverlay = genericComponent<new () => {
     function animateClick () {
       if (props.noClickAnimation) return
 
-      contentEl.value?.animate([
+      contentEl.value && animate(contentEl.value, [
         { transformOrigin: 'center' },
         { transform: 'scale(1.03)' },
         { transformOrigin: 'center' },
@@ -256,6 +257,7 @@ export const VOverlay = genericComponent<new () => {
                 <Scrim
                   color={ scrimColor }
                   modelValue={ isActive.value && !!props.scrim }
+                  { ...toHandlers(scrimEvents.value) }
                 />
                 <MaybeTransition
                   appear
